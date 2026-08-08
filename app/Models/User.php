@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable; // Classe de base pour l
 use Illuminate\Notifications\Notifiable; // Permet d'envoyer des notifications
 use Laravel\Sanctum\HasApiTokens; // Permet à User d'utiliser les tokens Sanctum
 
-#[Fillable(['name', 'email', 'password'])] // Champs autorisés lors du remplissage du modèle
+#[Fillable(['name', 'email', 'password', 'role'])] // Champs autorisés lors du remplissage du modèle
 #[Hidden(['password', 'remember_token'])] // Champs cachés dans les réponses JSON
 class User extends Authenticatable // Modèle User basé sur l'authentification Laravel
 {
