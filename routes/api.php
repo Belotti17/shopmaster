@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController; // Importe le contrôleur d'authentification
 use App\Http\Controllers\Api\ClientController; // Importe le contrôleur des fonctionnalités client
+use App\Http\Controllers\Api\ProductController; // Importe le contrôleur des produits
 use Illuminate\Http\Request; // Importe Request pour récupérer les informations de la requête
 use Illuminate\Support\Facades\Route; // Importe le système de gestion des routes Laravel
 
@@ -10,15 +11,14 @@ Route::post('/register', [AuthController::class, 'register']); // Crée la route
 
 Route::post('/login', [AuthController::class, 'login']); // Crée la route POST pour connecter un utilisateur
 
-
 Route::get('/user', function (Request $request) { // Crée la route GET permettant de récupérer l'utilisateur connecté
     return $request->user(); // Retourne les informations de l'utilisateur authentifié
 })->middleware('auth:sanctum'); // Protège la route avec l'authentification Sanctum
 
-
 Route::get('/client/profile', [ClientController::class, 'profile']) // Crée la route GET permettant au client de consulter son profil
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum
 
+Route::get('/products', [ProductController::class, 'index']); // Crée la route GET pour récupérer la liste des produits
 
 Route::get('/admin-test', function (Request $request) { // Crée temporairement une route de test pour l'administrateur
     return response()->json([ // Retourne une réponse au format JSON
