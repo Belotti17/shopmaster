@@ -25,5 +25,5 @@ Route::get('/admin-test', function (Request $request) { // Crée temporairement 
     return response()->json([ // Retourne une réponse au format JSON
         'message' => 'Bienvenue dans la zone administrateur',
         'user' => $request->user(), // Récupère les informations de l'administrateur connecté
-    ]); // Termine la réponse JSON
+    ]);
 })->middleware(['auth:sanctum', 'admin']); // Vérifie à la fois l'authentification et le rôle administrateur
