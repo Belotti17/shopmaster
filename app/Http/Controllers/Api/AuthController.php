@@ -43,4 +43,14 @@ class AuthController extends Controller // Controller pour gérer l'authentifica
             'user' => $user, // Informations de l'utilisateur connecté
         ]);
     }
+
+
+    public function logout(Request $request) // Déclare la méthode permettant de déconnecter l'utilisateur
+    {
+    $request->user()->currentAccessToken()->delete(); // Supprime uniquement le token actuellement utilisé par l'utilisateur
+
+    return response()->json([ // Retourne une réponse au format JSON
+        'message' => 'Déconnexion réussie',
+    ]);
+    }
 }
