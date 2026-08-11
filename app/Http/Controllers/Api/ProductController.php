@@ -35,4 +35,13 @@ class ProductController extends Controller // Déclare le contrôleur des produi
             'product' => $product, // Retourne le produit qui vient d'être créé
         ], 201); // Retourne le code HTTP 201 indiquant une création réussie
     }
+
+
+    public function show(Product $product) // Déclare la méthode permettant de récupérer un produit précis
+    {
+    return response()->json([ // Retourne une réponse au format JSON
+        'message' => 'Produit récupéré avec succès', // Ajoute un message de confirmation
+        'product' => $product, // Retourne le produit demandé
+    ]); // Termine la réponse JSON
+    } // Termine la méthode show
 }
