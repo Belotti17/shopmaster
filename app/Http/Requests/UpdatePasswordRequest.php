@@ -15,8 +15,10 @@ class UpdatePasswordRequest extends FormRequest // Déclare la classe de validat
 
     public function rules(): array // Définit les règles de validation du changement de mot de passe
     {
-        return [
-            // Les règles de validation seront ajoutées à l'étape suivante
-        ]; // Retourne actuellement une liste vide de règles
+    return [
+        'current_password' => 'required|string', // L'ancien mot de passe est obligatoire et doit être une chaîne de caractères
+        'password' => 'required|string|min:8|confirmed', // Le nouveau mot de passe est obligatoire, doit contenir au moins 8 caractères et doit être confirmé
+        'password_confirmation' => 'required|string|min:8', // La confirmation du nouveau mot de passe est obligatoire et doit contenir au moins 8 caractères
+    ]; // Retourne les règles de validation
     }
 }
