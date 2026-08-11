@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CategoryRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class CategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Autorise la requête ; l'accès admin sera contrôlé par le middleware
+        return true; // Autorise la requête ; le middleware admin protège déjà la route
     }
 
     /**
@@ -21,15 +22,17 @@ class CategoryRequest extends FormRequest
     {
         return [
             'name' => [
-                'required', // Le nom est obligatoire
+                'required', // Le nom de la catégorie est obligatoire
                 'string', // Le nom doit être une chaîne de caractères
                 'max:100', // Le nom ne peut pas dépasser 100 caractères
-                'unique:categories,name,' . $this->category?->id, // Le nom doit être unique, sauf lors de la modification de la catégorie actuelle
+
+                Rule::unique('categories', 'name')
+                    ->ignore($this->route('category')?->id), // Ignore la catégorie actuelle lors d'une modification
             ],
 
             'description' => [
-                'nullable', // La description peut être vide
-                'string', // Si elle est présente, elle doit être une chaîne
+                'nullable', // La description peut être absente ou vide
+                'string', // La description doit être une chaîne de caractères
                 'max:1000', // La description ne peut pas dépasser 1000 caractères
             ],
         ];
