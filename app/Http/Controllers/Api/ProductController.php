@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api; // Indique que ce contrôleur appartient à 
 use App\Http\Controllers\Controller; // Importe le contrôleur principal de Laravel
 use App\Models\Product; // Importe le modèle Product
 use Illuminate\Http\Request; // Importe Request pour récupérer les données envoyées
+use App\Http\Requests\ProductRequest; // Importe la requête contenant les règles de validation des produits
 
 
 class ProductController extends Controller // Déclare le contrôleur des produits
@@ -20,21 +21,21 @@ class ProductController extends Controller // Déclare le contrôleur des produi
     } // Termine la méthode index
 
 
-    public function store(Request $request) // Déclare la méthode permettant de créer un nouveau produit
+    public function store(ProductRequest $request) // Reçoit une requête validée pour créer un produit
     {
-        $product = Product::create([ // Crée un nouveau produit dans la base de données
-            'name' => $request->name, // Récupère le nom envoyé dans la requête
-            'description' => $request->description, // Récupère la description envoyée dans la requête
-            'price' => $request->price, // Récupère le prix envoyé dans la requête
-            'stock' => $request->stock, // Récupère le stock envoyé dans la requête
-            'image' => $request->image, // Récupère le chemin de l'image envoyé dans la requête
-        ]); // Termine la création du produit
+    $product = Product::create([ // Crée un nouveau produit dans la base de données
+        'name' => $request->name, // Récupère le nom validé du produit
+        'description' => $request->description, // Récupère la description validée du produit
+        'price' => $request->price, // Récupère le prix validé du produit
+        'stock' => $request->stock, // Récupère le stock validé du produit
+        'image' => $request->image, // Récupère l'image validée du produit
+    ]); // Termine la création du produit
 
-        return response()->json([ // Retourne une réponse au format JSON
-            'message' => 'Produit créé avec succès', // Ajoute un message de confirmation
-            'product' => $product, // Retourne le produit qui vient d'être créé
-        ], 201); // Retourne le code HTTP 201 indiquant une création réussie
-    }
+    return response()->json([ // Retourne une réponse au format JSON
+        'message' => 'Produit créé avec succès', // Ajoute un message de confirmation
+        'product' => $product, // Retourne le produit créé
+    ], 201); // Retourne le code HTTP 201 indiquant une création réussie
+    } // Termine la méthode store
 
 
     public function show(Product $product) // Déclare la méthode permettant de récupérer un produit précis
