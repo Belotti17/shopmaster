@@ -22,6 +22,8 @@ Route::get('/products', [ProductController::class, 'index']); // Crée la route 
 Route::get('/products/{product}', [ProductController::class, 'show']); // Récupère un produit précis grâce à son identifiant
 Route::put('/products/{product}', [ProductController::class, 'update']) // Crée la route PUT pour modifier un produit
     ->middleware(['auth:sanctum', 'admin']); // Autorise uniquement un administrateur authentifié
+Route::delete('/products/{product}', [ProductController::class, 'destroy']) // Crée la route DELETE pour supprimer un produit
+    ->middleware(['auth:sanctum', 'admin']); // Autorise uniquement un administrateur authentifié    
 Route::post('/products', [ProductController::class, 'store']) // Crée un nouveau produit
     ->middleware(['auth:sanctum', 'admin']); // Autorise uniquement un administrateur authentifié
 Route::get('/admin-test', function (Request $request) { // Crée temporairement une route de test pour l'administrateur
