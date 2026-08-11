@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api; // Emplacement du Controller API
 
 use App\Http\Controllers\Controller; // Controller principal Laravel
+use Illuminate\Http\Request; // Importe Request pour récupérer l'utilisateur et son token actuel
 use App\Http\Requests\LoginRequest; // Validation de la connexion
 use App\Http\Requests\RegisterRequest; // Validation de l'inscription
 use App\Models\User; // Modèle utilisateur
