@@ -7,13 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = [
-        'name', // Nom de la catégorie
-        'description', // Description de la catégorie
-    ];
-
+    /**
+     * Une catégorie peut avoir plusieurs produits.
+     */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class); // Une catégorie possède plusieurs produits
+        return $this->hasMany(Product::class);
     }
 }
