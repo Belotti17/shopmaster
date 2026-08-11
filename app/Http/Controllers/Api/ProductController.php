@@ -61,4 +61,14 @@ class ProductController extends Controller // Déclare le contrôleur des produi
         'product' => $product->fresh(), // Récupère la version actualisée du produit
     ]); // Termine la réponse JSON
     } // Termine la méthode update
+
+
+    public function destroy(Product $product) // Déclare la méthode permettant de supprimer un produit
+    {
+    $product->delete(); // Supprime le produit de la base de données
+
+    return response()->json([ // Retourne une réponse au format JSON
+        'message' => 'Produit supprimé avec succès', // Ajoute un message de confirmation
+    ]); // Termine la réponse JSON
+    } // Termine la méthode destroy
 }
