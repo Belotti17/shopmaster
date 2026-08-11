@@ -1,16 +1,23 @@
-<?php // Indique que ce fichier contient du code PHP
+<?php
 
-namespace App\Models; // Indique que le modèle appartient à l'espace de noms Models
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model; // Importe le modèle Eloquent de Laravel
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Product extends Model // Déclare le modèle Product
+class Product extends Model
 {
-    protected $fillable = [ // Définit les champs pouvant être remplis automatiquement
-        'name', // Autorise l'enregistrement du nom du produit
-        'description', // Autorise l'enregistrement de la description du produit
-        'price', // Autorise l'enregistrement du prix du produit
-        'stock', // Autorise l'enregistrement du stock disponible
-        'image', // Autorise l'enregistrement du chemin de l'image
+    protected $fillable = [
+        'name', // Nom du produit
+        'description', // Description du produit
+        'price', // Prix du produit
+        'stock', // Quantité disponible en stock
+        'image', // Nom ou chemin de l'image du produit
+        'category_id', // Identifiant de la catégorie du produit
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class); // Un produit appartient à une seule catégorie
+    }
 }
