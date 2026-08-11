@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController; // Importe le contrôleur d'authent
 use App\Http\Controllers\Api\ClientController; // Importe le contrôleur des fonctionnalités client
 use App\Http\Controllers\Api\ProductController; // Importe le contrôleur des produits
 use Illuminate\Support\Facades\Route; // Importe le système de gestion des routes Laravel
+use App\Http\Controllers\Api\CategoryController; // Importe le contrôleur des catégories
 
 
 Route::post('/register', [AuthController::class, 'register']); // Crée la route POST pour l'inscription d'un nouvel utilisateur
@@ -39,3 +40,17 @@ Route::put('/products/{product}', [ProductController::class, 'update']) // Crée
 
 Route::delete('/products/{product}', [ProductController::class, 'destroy']) // Crée la route DELETE pour supprimer un produit
     ->middleware(['auth:sanctum', 'admin']); // Autorise uniquement un administrateur authentifié
+
+// Routes publiques pour consulter les catégories
+Route::get('/categories', [CategoryController::class, 'index']); // Récupère toutes les catégories
+Route::get('/categories/{category}', [CategoryController::class, 'show']); // Récupère une catégorie précise
+
+// Routes protégées réservées à l'administrateur
+Route::post('/categories', [CategoryController::class, 'store']) // Crée une nouvelle catégorie
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
+
+Route::put('/categories/{category}', [CategoryController::class, 'update']) // Modifie une catégorie
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
+
+Route::delete('/categories/{category}', [CategoryController::class, 'destroy']) // Supprime une catégorie
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur    
