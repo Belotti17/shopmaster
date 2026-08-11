@@ -44,4 +44,21 @@ class ProductController extends Controller // Déclare le contrôleur des produi
         'product' => $product, // Retourne le produit demandé
     ]); // Termine la réponse JSON
     } // Termine la méthode show
+
+
+    public function update(Request $request, Product $product) // Déclare la méthode permettant de modifier un produit existant
+    {
+    $product->update([ // Met à jour le produit trouvé dans la base de données
+        'name' => $request->name, // Met à jour le nom du produit
+        'description' => $request->description, // Met à jour la description du produit
+        'price' => $request->price, // Met à jour le prix du produit
+        'stock' => $request->stock, // Met à jour le stock disponible
+        'image' => $request->image, // Met à jour l'image du produit
+    ]); // Termine la mise à jour du produit
+
+    return response()->json([ // Retourne une réponse au format JSON
+        'message' => 'Produit modifié avec succès', // Ajoute un message de confirmation
+        'product' => $product->fresh(), // Récupère la version actualisée du produit
+    ]); // Termine la réponse JSON
+    } // Termine la méthode update
 }
