@@ -20,7 +20,10 @@ Route::get('/client/profile', [ClientController::class, 'profile']) // Crée la 
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum
 
 Route::put('/client/profile', [ClientController::class, 'updateProfile']) // Crée la route PUT permettant au client de modifier son profil
-    ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum   
+    ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum  
+  
+Route::put('/client/password', [ClientController::class, 'updatePassword']) // Crée la route PUT permettant au client de modifier son mot de passe
+    ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum
 
 Route::get('/products', [ProductController::class, 'index']); // Crée la route GET pour récupérer la liste des produits
 
