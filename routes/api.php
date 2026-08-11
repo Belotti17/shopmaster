@@ -19,6 +19,7 @@ Route::get('/client/profile', [ClientController::class, 'profile']) // Crée la 
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum
 
 Route::get('/products', [ProductController::class, 'index']); // Crée la route GET pour récupérer la liste des produits
+Route::get('/products/{product}', [ProductController::class, 'show']); // Récupère un produit précis grâce à son identifiant
 Route::post('/products', [ProductController::class, 'store']) // Crée un nouveau produit
     ->middleware(['auth:sanctum', 'admin']); // Autorise uniquement un administrateur authentifié
 Route::get('/admin-test', function (Request $request) { // Crée temporairement une route de test pour l'administrateur
