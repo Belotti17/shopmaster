@@ -6,12 +6,11 @@ use App\Http\Controllers\Controller; // Importe le contrôleur principal de Lara
 use App\Http\Requests\ProductRequest; // Importe la requête contenant les règles de validation des produits
 use App\Models\Product; // Importe le modèle Product
 
-
 class ProductController extends Controller // Déclare le contrôleur des produits
 {
     public function index() // Déclare la méthode permettant de récupérer tous les produits
     {
-        $products = Product::all(); // Récupère tous les produits présents dans la base de données
+        $products = Product::with('category')->get(); // Récupère tous les produits avec leur catégorie
 
         return response()->json([ // Retourne une réponse au format JSON
             'message' => 'Liste des produits récupérée avec succès', // Ajoute un message de confirmation
@@ -28,20 +27,23 @@ class ProductController extends Controller // Déclare le contrôleur des produi
             'price' => $request->price, // Récupère le prix validé du produit
             'stock' => $request->stock, // Récupère le stock validé du produit
             'image' => $request->image, // Récupère l'image validée du produit
-        ]); // Termine la création du produit
+            'category_id' => $request->category_id, // Associe le produit à sa catégorie
+        ]);
 
         return response()->json([ // Retourne une réponse au format JSON
             'message' => 'Produit créé avec succès', // Ajoute un message de confirmation
-            'product' => $product, // Retourne le produit créé
+            'product' => $product->load('category'), // Retourne le produit avec sa catégorie
         ], 201); // Retourne le code HTTP 201 indiquant une création réussie
     } // Termine la méthode store
 
 
     public function show(Product $product) // Déclare la méthode permettant de récupérer un produit précis
     {
+        $product->load('category'); // Charge la catégorie associée au produit
+
         return response()->json([ // Retourne une réponse au format JSON
             'message' => 'Produit récupéré avec succès', // Ajoute un message de confirmation
-            'product' => $product, // Retourne le produit demandé
+            'product' => $product, // Retourne le produit avec sa catégorie
         ]); // Termine la réponse JSON
     } // Termine la méthode show
 
@@ -54,11 +56,12 @@ class ProductController extends Controller // Déclare le contrôleur des produi
             'price' => $request->price, // Met à jour le prix validé du produit
             'stock' => $request->stock, // Met à jour le stock validé du produit
             'image' => $request->image, // Met à jour l'image validée du produit
-        ]); // Termine la mise à jour du produit
+            'category_id' => $request->category_id, // Met à jour la catégorie du produit
+        ]);
 
         return response()->json([ // Retourne une réponse au format JSON
             'message' => 'Produit modifié avec succès', // Ajoute un message de confirmation
-            'product' => $product->fresh(), // Récupère la version actualisée du produit
+            'product' => $product->fresh()->load('category'), // Retourne la version actualisée avec sa catégorie
         ]); // Termine la réponse JSON
     } // Termine la méthode update
 
