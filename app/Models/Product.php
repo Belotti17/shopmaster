@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
+    /**
+     * Les champs autorisés lors de la création ou modification d'un produit.
+     */
     protected $fillable = [
         'name', // Nom du produit
         'description', // Description du produit
@@ -16,8 +19,11 @@ class Product extends Model
         'category_id', // Identifiant de la catégorie du produit
     ];
 
+    /**
+     * Un produit appartient à une seule catégorie.
+     */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class); // Un produit appartient à une seule catégorie
+        return $this->belongsTo(Category::class); // Relie le produit à sa catégorie
     }
 }
