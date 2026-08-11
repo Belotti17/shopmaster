@@ -19,6 +19,8 @@ Route::get('/user', function () { // Crée la route GET permettant de récupére
 Route::get('/client/profile', [ClientController::class, 'profile']) // Crée la route GET permettant au client de consulter son profil
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum
 
+Route::put('/client/profile', [ClientController::class, 'updateProfile']) // Crée la route PUT permettant au client de modifier son profil
+    ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avec Sanctum   
 
 Route::get('/products', [ProductController::class, 'index']); // Crée la route GET pour récupérer la liste des produits
 
