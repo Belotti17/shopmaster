@@ -10,6 +10,8 @@ Route::post('/register', [AuthController::class, 'register']); // Crée la route
 
 Route::post('/login', [AuthController::class, 'login']); // Crée la route POST pour connecter un utilisateur
 
+Route::post('/logout', [AuthController::class, 'logout']) // Crée la route POST permettant à l'utilisateur de se déconnecter
+    ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avant de le déconnecter
 
 Route::get('/user', function () { // Crée la route GET permettant de récupérer l'utilisateur connecté
     return request()->user(); // Retourne les informations de l'utilisateur authentifié
