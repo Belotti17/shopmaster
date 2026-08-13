@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\ClientController; // Importe le contrôleur des fon
 use App\Http\Controllers\Api\ProductController; // Importe le contrôleur des produits
 use Illuminate\Support\Facades\Route; // Importe le système de gestion des routes Laravel
 use App\Http\Controllers\Api\CategoryController; // Importe le contrôleur des catégories
-
+use App\Http\Controllers\Api\UserController; // Importe le contrôleur des utilisateurs
 
 Route::post('/register', [AuthController::class, 'register']); // Crée la route POST pour l'inscription d'un nouvel utilisateur
 
@@ -54,3 +54,6 @@ Route::put('/categories/{category}', [CategoryController::class, 'update']) // M
 
 Route::delete('/categories/{category}', [CategoryController::class, 'destroy']) // Supprime une catégorie
     ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur    
+
+// Route permettant à l'utilisateur connecté de consulter son profil
+Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile']);
