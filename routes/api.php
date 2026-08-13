@@ -62,3 +62,7 @@ Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'prof
 Route::get('/users', [UserController::class, 'index'])
     // Vérifie que l'utilisateur est connecté et possède le rôle administrateur
     ->middleware(['auth:sanctum', 'admin']);
+
+    // Récupère un utilisateur précis
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->middleware(['auth:sanctum', 'admin']);
