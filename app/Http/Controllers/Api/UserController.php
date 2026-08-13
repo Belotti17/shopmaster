@@ -58,6 +58,20 @@ class UserController extends Controller
         ]);
     }
 
+
+    // Supprime un utilisateur précis
+   public function destroy(User $user)
+   {
+    // Supprime l'utilisateur de la base de données
+    $user->delete();
+
+    // Retourne une réponse au format JSON
+    return response()->json([
+        // Message de confirmation
+        'message' => 'Utilisateur supprimé avec succès',
+    ]);
+    }
+
     // Récupère le profil de l'utilisateur actuellement connecté
     public function profile(Request $request)
     {
