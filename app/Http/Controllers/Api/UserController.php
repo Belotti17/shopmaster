@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Http\Requests\UserRequest; // Importe la requête contenant les règles de validation
 
 class UserController extends Controller
 {
@@ -34,6 +35,26 @@ class UserController extends Controller
 
             // Retourne l'utilisateur demandé
             'user' => $user,
+        ]);
+    }
+
+    // Modifie les informations d'un utilisateur
+    public function update(UserRequest $request, User $user)
+    {
+        // Met à jour les informations de l'utilisateur
+        $user->update([
+            'name' => $request->name, // Récupère le nouveau nom validé
+            'email' => $request->email, // Récupère le nouvel email validé
+            'role' => $request->role, // Récupère le nouveau rôle validé
+        ]);
+
+        // Retourne une réponse JSON
+        return response()->json([
+            // Message de confirmation
+            'message' => 'Utilisateur modifié avec succès',
+
+            // Retourne les informations actualisées de l'utilisateur
+            'user' => $user->fresh(),
         ]);
     }
 

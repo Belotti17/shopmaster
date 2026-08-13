@@ -4,6 +4,7 @@ namespace App\Http\Requests; // Indique que cette classe appartient aux requête
 
 use Illuminate\Contracts\Validation\ValidationRule; // Importe le type utilisé pour les règles de validation
 use Illuminate\Foundation\Http\FormRequest; // Importe la classe FormRequest de Laravel
+use Illuminate\Validation\Rule; // Permet de construire des règles de validation avancées
 
 class UserRequest extends FormRequest // Déclare la classe de validation des utilisateurs
 {
@@ -25,7 +26,12 @@ class UserRequest extends FormRequest // Déclare la classe de validation des ut
         return [
             'name' => 'required|string|max:255', // Le nom est obligatoire, doit être du texte et ne doit pas dépasser 255 caractères
 
-            'email' => 'required|email|max:255', // L'email est obligatoire, doit avoir un format valide et ne doit pas dépasser 255 caractères
+            'email' => [
+                'required', // L'email est obligatoire
+                'email', // L'email doit avoir un format valide
+                'max:255', // L'email ne doit pas dépasser 255 caractères
+                Rule::unique('users', 'email')->ignore($this->user), // L'email doit être unique sauf pour l'utilisateur actuellement modifié
+            ],
 
             'role' => 'required|in:admin,client', // Le rôle est obligatoire et doit uniquement être admin ou client
         ];
