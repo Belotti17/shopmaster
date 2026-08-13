@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests; // Indique que cette classe appartient à l'espace de noms des requêtes HTTP
 
-use Illuminate\Contracts\Validation\ValidationRule; // Importe le type utilisé pour les règles de validation
 use Illuminate\Foundation\Http\FormRequest; // Importe la classe FormRequest de Laravel
-
 
 class ProductRequest extends FormRequest // Déclare la classe de validation des produits
 {
@@ -12,7 +10,6 @@ class ProductRequest extends FormRequest // Déclare la classe de validation des
     {
         return true; // Autorise la requête à passer aux règles de validation
     }
-
 
     public function rules(): array // Définit les règles de validation des données du produit
     {
@@ -22,6 +19,7 @@ class ProductRequest extends FormRequest // Déclare la classe de validation des
             'price' => 'required|numeric|min:0', // Le prix est obligatoire, doit être numérique et ne peut pas être négatif
             'stock' => 'required|integer|min:0', // Le stock est obligatoire, doit être un entier et ne peut pas être négatif
             'image' => 'nullable|string|max:255', // L'image est facultative et son chemin ne doit pas dépasser 255 caractères
+            'category_id' => 'required|exists:categories,id', // La catégorie est obligatoire et doit exister dans la table categories
         ]; // Retourne toutes les règles de validation
     }
 }
