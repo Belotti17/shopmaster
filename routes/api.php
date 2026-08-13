@@ -66,3 +66,7 @@ Route::get('/users', [UserController::class, 'index'])
     // Récupère un utilisateur précis
 Route::get('/users/{user}', [UserController::class, 'show'])
     ->middleware(['auth:sanctum', 'admin']);
+
+// Modifie les informations d'un utilisateur
+Route::put('/users/{user}', [UserController::class, 'update'])
+    ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut modifier un utilisateur    
