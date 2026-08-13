@@ -57,3 +57,8 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy']) 
 
 // Route permettant à l'utilisateur connecté de consulter son profil
 Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile']);
+
+// Route permettant à l'administrateur de consulter tous les utilisateurs
+Route::get('/users', [UserController::class, 'index'])
+    // Vérifie que l'utilisateur est connecté et possède le rôle administrateur
+    ->middleware(['auth:sanctum', 'admin']);
