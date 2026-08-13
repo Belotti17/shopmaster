@@ -11,16 +11,29 @@ class UserController extends Controller
     // Récupère la liste de tous les utilisateurs
     public function index()
     {
-        // Récupère tous les utilisateurs présents dans la base de données
+        // Récupère tous les utilisateurs dans la base de données
         $users = User::all();
 
         // Retourne une réponse au format JSON
         return response()->json([
-            // Message envoyé au client
+            // Message de confirmation
             'message' => 'Liste des utilisateurs récupérée avec succès',
 
-            // Ajoute la liste des utilisateurs dans la réponse
+            // Envoie la liste des utilisateurs
             'users' => $users,
+        ]);
+    }
+
+    // Récupère un utilisateur précis grâce à son identifiant
+    public function show(User $user)
+    {
+        // Retourne une réponse au format JSON
+        return response()->json([
+            // Message de confirmation
+            'message' => 'Utilisateur récupéré avec succès',
+
+            // Retourne l'utilisateur demandé
+            'user' => $user,
         ]);
     }
 
