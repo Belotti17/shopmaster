@@ -58,18 +58,30 @@ class UserController extends Controller
         ]);
     }
 
-
     // Supprime un utilisateur précis
-   public function destroy(User $user)
-   {
-    // Supprime l'utilisateur de la base de données
-    $user->delete();
+    public function destroy(Request $request, User $user)
+    {
+        // Récupère l'utilisateur actuellement connecté grâce à Sanctum
+        $currentUser = $request->user();
 
-    // Retourne une réponse au format JSON
-    return response()->json([
-        // Message de confirmation
-        'message' => 'Utilisateur supprimé avec succès',
-    ]);
+        // Vérifie si l'administrateur essaie de supprimer son propre compte
+        if ($currentUser->id === $user->id) {
+
+            // Retourne une erreur et empêche la suppression
+            return response()->json([
+                // Message expliquant pourquoi la suppression est refusée
+                'message' => 'Vous ne pouvez pas supprimer votre propre compte.',
+            ], 403); // 403 = action interdite
+        }
+
+        // Supprime l'utilisateur demandé de la base de données
+        $user->delete();
+
+        // Retourne une réponse au format JSON
+        return response()->json([
+            // Message de confirmation
+            'message' => 'Utilisateur supprimé avec succès',
+        ]);
     }
 
     // Récupère le profil de l'utilisateur actuellement connecté
