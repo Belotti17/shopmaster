@@ -71,6 +71,10 @@ Route::get('/users/{user}', [UserController::class, 'show'])
 Route::put('/users/{user}', [UserController::class, 'update'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut modifier un utilisateur    
 
+// Modifie le mot de passe d'un utilisateur
+Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])
+    ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut modifier le mot de passe
+
     // Supprime un utilisateur
 Route::delete('/users/{user}', [UserController::class, 'destroy'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut supprimer un utilisateur
