@@ -41,6 +41,19 @@ class UserController extends Controller
     // Modifie les informations d'un utilisateur
     public function update(UserRequest $request, User $user)
     {
+        // Récupère l'utilisateur actuellement connecté grâce au token Sanctum
+        $currentUser = $request->user();
+
+        // Vérifie si l'administrateur essaie de modifier son propre rôle
+        if ($currentUser->id === $user->id && $request->role !== 'admin') {
+
+            // Retourne une erreur et empêche la modification
+            return response()->json([
+                // Message expliquant pourquoi l'action est refusée
+                'message' => 'Vous ne pouvez pas retirer votre propre rôle administrateur.',
+            ], 403); // 403 = action interdite
+        }
+
         // Met à jour les informations de l'utilisateur
         $user->update([
             'name' => $request->name, // Récupère le nouveau nom validé
@@ -48,7 +61,7 @@ class UserController extends Controller
             'role' => $request->role, // Récupère le nouveau rôle validé
         ]);
 
-        // Retourne une réponse JSON
+        // Retourne une réponse au format JSON
         return response()->json([
             // Message de confirmation
             'message' => 'Utilisateur modifié avec succès',
