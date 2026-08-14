@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Requests\UserRequest; // Importe la requête contenant les règles de validation
+use App\Http\Requests\PasswordRequest; // Importe la validation du nouveau mot de passe
+use Illuminate\Support\Facades\Hash; // Permet de hasher le mot de passe
 
 class UserController extends Controller
 {
@@ -69,6 +71,22 @@ class UserController extends Controller
             // Retourne les informations actualisées de l'utilisateur
             'user' => $user->fresh(),
         ]);
+    }
+
+
+    // Modifie le mot de passe d'un utilisateur
+    public function updatePassword(PasswordRequest $request, User $user)
+    {
+    // Hash le nouveau mot de passe avant de l'enregistrer
+    $user->update([
+        'password' => Hash::make($request->password),
+    ]);
+
+    // Retourne une réponse au format JSON
+    return response()->json([
+        // Message de confirmation
+        'message' => 'Mot de passe modifié avec succès',
+    ]);
     }
 
     // Supprime un utilisateur précis
