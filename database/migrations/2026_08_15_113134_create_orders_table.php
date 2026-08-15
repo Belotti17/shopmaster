@@ -7,25 +7,38 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Exécute la migration.
      */
     public function up(): void
-{
-    Schema::create('orders', function (Blueprint $table) {
-        $table->id();
+    {
+        // Crée la table orders
+        Schema::create('orders', function (Blueprint $table) {
 
-        // Identifie le client qui a passé la commande
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // Identifiant unique de la commande
+            $table->id();
 
-        $table->timestamps();
-    });
-}
+            // Identifie l'utilisateur qui a passé la commande
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            // Montant total de la commande
+            $table->decimal('total', 10, 2)->default(0);
+
+            // État actuel de la commande
+            $table->string('status')->default('pending');
+
+            // Ajoute created_at et updated_at
+            $table->timestamps();
+        });
+    }
 
     /**
-     * Reverse the migrations.
+     * Annule la migration.
      */
     public function down(): void
     {
+        // Supprime la table orders si elle existe
         Schema::dropIfExists('orders');
     }
 };
