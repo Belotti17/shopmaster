@@ -1,29 +1,35 @@
 <?php
 
+// Définit l'espace de noms du modèle
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+// Importe la classe permettant de définir une relation "plusieurs"
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Importe le modèle principal Eloquent
+use Illuminate\Database\Eloquent\Model;
+
+// Importe le modèle OrderItem
+use App\Models\OrderItem;
+
+
+// Déclare le modèle Product
 class Product extends Model
 {
-    /**
-     * Les champs autorisés lors de la création ou modification d'un produit.
-     */
+    // Définit les champs pouvant être remplis automatiquement
     protected $fillable = [
-        'name', // Nom du produit
+        'name',        // Nom du produit
         'description', // Description du produit
-        'price', // Prix du produit
-        'stock', // Quantité disponible en stock
-        'image', // Nom ou chemin de l'image du produit
-        'category_id', // Identifiant de la catégorie du produit
+        'price',       // Prix actuel du produit
+        'stock',       // Quantité disponible en stock
+        'image',       // Image du produit
+        'category_id', // Catégorie du produit
     ];
 
-    /**
-     * Un produit appartient à une seule catégorie.
-     */
-    public function category(): BelongsTo
+    // Définit la relation entre Product et OrderItem
+    public function orderItems(): HasMany
     {
-        return $this->belongsTo(Category::class); // Relie le produit à sa catégorie
+        // Un produit peut apparaître dans plusieurs lignes de commande
+        return $this->hasMany(OrderItem::class);
     }
 }
