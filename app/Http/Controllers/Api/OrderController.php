@@ -6,64 +6,74 @@ use App\Http\Controllers\Controller; // Importe le contrôleur principal de Lara
 use Illuminate\Http\Request; // Permet de récupérer les données envoyées par le client
 use App\Models\Order; // Importe le modèle Order
 use App\Models\Product; // Importe le modèle Product
-use Illuminate\Support\Facades\DB; // Permet d'utiliser une transaction de base de données
+use Illuminate\Support\Facades\DB; // Permet d'utiliser les transactions de base de données
 
 class OrderController extends Controller
 {
     // Crée une nouvelle commande pour le client connecté
     public function store(Request $request)
     {
-        // Vérifie que la requête contient un tableau de produits
+        // Valide les données envoyées par le client
         $validated = $request->validate([
-            'items' => 'required|array|min:1',
+            'items' => 'required|array|min:1', // Vérifie que la commande contient au moins un produit
 
-            // Vérifie chaque élément du tableau
-            'items.*.product_id' => 'required|integer|exists:products,id',
+            'items.*.product_id' => 'required|integer|exists:products,id', // Vérifie que chaque produit existe
 
-            // Vérifie que la quantité est un entier positif
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|integer|min:1', // Vérifie que chaque quantité est positive
         ]);
 
         // Récupère l'utilisateur actuellement connecté
         $user = $request->user();
 
-        // Commence une transaction pour garantir que toutes les opérations réussissent ensemble
+        // Lance une transaction afin de garantir la cohérence des opérations
         $order = DB::transaction(function () use ($validated, $user) {
 
-            // Crée une nouvelle commande appartenant au client connecté
+            // Crée une nouvelle commande appartenant à l'utilisateur connecté
             $order = Order::create([
-                'user_id' => $user->id,
-                'total' => 0,
-                'status' => 'pending',
+                'user_id' => $user->id, // Associe la commande au client
+                'total' => 0, // Le total sera calculé plus bas
+                'status' => 'pending', // Définit la commande comme étant en attente
             ]);
 
-            // Initialise le montant total de la commande
+            // Initialise le total de la commande
             $total = 0;
 
-            // Parcourt tous les produits envoyés dans la commande
+            // Parcourt chaque produit envoyé dans la commande
             foreach ($validated['items'] as $item) {
 
-                // Recherche le produit dans la base de données
+                // Récupère le produit dans la base de données
                 $product = Product::findOrFail($item['product_id']);
 
                 // Récupère la quantité demandée
                 $quantity = $item['quantity'];
 
-                // Calcule le sous-total de cette ligne
+                // Vérifie que le stock disponible est suffisant
+                if ($quantity > $product->stock) {
+
+                    // Arrête la transaction avec une exception
+                    throw new \Exception(
+                        "Stock insuffisant pour le produit : {$product->name}"
+                    );
+                }
+
+                // Calcule le prix total de cette ligne
                 $subtotal = $product->price * $quantity;
 
-                // Ajoute le sous-total au total général
+                // Ajoute le prix de cette ligne au total général
                 $total += $subtotal;
 
                 // Crée la ligne de commande
                 $order->items()->create([
-                    'product_id' => $product->id,
-                    'quantity' => $quantity,
-                    'price' => $product->price,
+                    'product_id' => $product->id, // Enregistre le produit commandé
+                    'quantity' => $quantity, // Enregistre la quantité commandée
+                    'price' => $product->price, // Enregistre le prix au moment de la commande
                 ]);
+
+                // Diminue le stock du produit
+                $product->decrement('stock', $quantity);
             }
 
-            // Met à jour le montant total de la commande
+            // Met à jour le total de la commande
             $order->update([
                 'total' => $total,
             ]);
@@ -72,48 +82,48 @@ class OrderController extends Controller
             return $order;
         });
 
-        // Recharge la commande avec son utilisateur et ses produits
+        // Charge les relations nécessaires pour la réponse
         $order->load('user', 'items.product');
 
-        // Retourne la réponse JSON
+        // Retourne la commande créée au client
         return response()->json([
             'message' => 'Commande créée avec succès',
             'order' => $order,
         ], 201);
     }
 
-    // Récupère les commandes du client connecté
+    // Récupère toutes les commandes du client connecté
     public function index(Request $request)
     {
         // Récupère uniquement les commandes appartenant au client connecté
         $orders = Order::where('user_id', $request->user()->id)
-            ->with('items.product')
-            ->latest()
-            ->get();
+            ->with('items.product') // Charge les produits des commandes
+            ->latest() // Trie les commandes de la plus récente à la plus ancienne
+            ->get(); // Exécute la requête
 
-        // Retourne les commandes au format JSON
+        // Retourne la liste des commandes
         return response()->json([
             'message' => 'Liste des commandes récupérée avec succès',
             'orders' => $orders,
         ]);
     }
 
-    // Récupère une commande précise du client connecté
+    // Récupère une commande précise
     public function show(Request $request, Order $order)
     {
-        // Vérifie que la commande appartient bien au client connecté
+        // Vérifie que la commande appartient au client connecté
         if ($order->user_id !== $request->user()->id) {
 
-            // Refuse l'accès à une commande appartenant à un autre utilisateur
+            // Refuse l'accès si la commande appartient à quelqu'un d'autre
             return response()->json([
                 'message' => 'Accès refusé à cette commande.',
             ], 403);
         }
 
-        // Charge les informations liées à la commande
+        // Charge les informations de la commande
         $order->load('user', 'items.product');
 
-        // Retourne la commande au format JSON
+        // Retourne la commande
         return response()->json([
             'message' => 'Commande récupérée avec succès',
             'order' => $order,
