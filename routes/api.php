@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\ProductController; // Importe le contrôleur des pr
 use Illuminate\Support\Facades\Route; // Importe le système de gestion des routes Laravel
 use App\Http\Controllers\Api\CategoryController; // Importe le contrôleur des catégories
 use App\Http\Controllers\Api\UserController; // Importe le contrôleur des utilisateurs
-
+use App\Http\Controllers\Api\OrderController; // Importe le contrôleur des commandes
 
 // ======================================================
 // AUTHENTIFICATION
@@ -120,3 +120,19 @@ Route::put('/users/{user}', [UserController::class, 'update'])
 // Supprime un utilisateur
 Route::delete('/users/{user}', [UserController::class, 'destroy'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut supprimer un utilisateur
+
+ // ====================
+// ROUTES DES COMMANDES
+// ====================
+
+// Permet au client connecté de créer une commande
+Route::post('/orders', [OrderController::class, 'store'])
+    ->middleware('auth:sanctum');
+
+// Permet au client connecté de consulter ses commandes
+Route::get('/orders', [OrderController::class, 'index'])
+    ->middleware('auth:sanctum');
+
+// Permet au client connecté de consulter une commande précise
+Route::get('/orders/{order}', [OrderController::class, 'show'])
+    ->middleware('auth:sanctum');   
