@@ -1,21 +1,24 @@
 <?php
 
-namespace App\Models; // Indique que ce modèle appartient à App\Models
+namespace App\Models; // Namespace du modèle
 
-use Illuminate\Database\Eloquent\Model; // Importe le modèle Eloquent de Laravel
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Permet de définir une relation belongsTo
-use App\Models\User; // Importe le modèle User
+use Illuminate\Database\Eloquent\Model; // Classe de base du modèle Laravel
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Permet de définir la relation avec User
 
 class EmailVerificationCode extends Model
 {
-    // Définit les champs pouvant être remplis automatiquement
+    /**
+     * Champs pouvant être remplis automatiquement.
+     */
     protected $fillable = [
-        'user_id',
-        'code',
-        'expires_at',
+        'user_id',    // Identifiant de l'utilisateur
+        'code',       // Code de vérification à 6 chiffres
+        'expires_at', // Date d'expiration du code
     ];
 
-    // Convertit automatiquement expires_at en objet de type date
+    /**
+     * Convertit automatiquement expires_at en objet date.
+     */
     protected function casts(): array
     {
         return [
@@ -23,10 +26,13 @@ class EmailVerificationCode extends Model
         ];
     }
 
-    // Définit la relation entre le code et l'utilisateur
+    /**
+     * Définit la relation avec l'utilisateur.
+     *
+     * Un code appartient à un seul utilisateur.
+     */
     public function user(): BelongsTo
     {
-        // Un code de vérification appartient à un utilisateur
         return $this->belongsTo(User::class);
     }
 }
