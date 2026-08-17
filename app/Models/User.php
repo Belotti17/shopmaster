@@ -12,6 +12,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable; // Classe de base pour l
 use Illuminate\Notifications\Notifiable; // Permet d'envoyer des notifications
 use Laravel\Sanctum\HasApiTokens; // Permet à User d'utiliser les tokens Sanctum
 use App\Models\Order; // Importe le modèle Order
+use App\Models\EmailVerificationCode; // Importe le modèle des codes de vérification
+
 
 #[Fillable(['name', 'email', 'password', 'role'])] // Champs autorisés lors du remplissage du modèle
 #[Hidden(['password', 'remember_token'])] // Champs cachés dans les réponses JSON
@@ -20,6 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail // Modèle User av
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable; // Active Sanctum, les factories et les notifications
 
+
     /**
      * Définit la relation entre User et Order.
      */
@@ -27,6 +30,16 @@ class User extends Authenticatable implements MustVerifyEmail // Modèle User av
     {
         return $this->hasMany(Order::class); // Retourne toutes les commandes appartenant à cet utilisateur
     }
+
+
+    /**
+     * Définit la relation entre User et les codes de vérification.
+     */
+    public function emailVerificationCodes(): HasMany // Un utilisateur peut avoir plusieurs codes
+    {
+        return $this->hasMany(EmailVerificationCode::class); // Retourne les codes de vérification de l'utilisateur
+    }
+
 
     /**
      * Définit les types de certains attributs.
