@@ -1,66 +1,80 @@
-<?php
+<?php // Indique que ce fichier contient du code PHP
 
-namespace App\Services;
+namespace App\Services; // Définit l'espace de noms du service
 
-use App\Models\User;
-use App\Models\PasswordResetCode;
-use App\Notifications\PasswordResetCodeNotification;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User; // Importe le modèle User
+use App\Models\PasswordResetCode; // Importe le modèle des codes de réinitialisation
+use App\Notifications\PasswordResetCodeNotification; // Importe la notification qui envoie le code
+use Illuminate\Support\Facades\Hash; // Permet de hacher et vérifier le code
 
-class PasswordResetService
+
+class PasswordResetService // Déclare le service de réinitialisation du mot de passe
 {
     /**
-     * Génère et envoie un code de réinitialisation du mot de passe.
+     * Génère et envoie un code de réinitialisation.
      */
     public function sendCode(User $user): void
     {
-        // Supprime les anciens codes de cet utilisateur.
+        // Supprime les anciens codes de réinitialisation de cet utilisateur
         PasswordResetCode::where('user_id', $user->id)->delete();
 
-        // Génère un code aléatoire à 6 chiffres.
+        // Génère un nouveau code aléatoire de 6 chiffres
         $code = (string) random_int(100000, 999999);
 
-        // Enregistre le code dans la base de données.
+        // Enregistre le code haché dans la base de données
         PasswordResetCode::create([
-            'user_id' => $user->id,
-            'code' => Hash::make($code),
-            'expires_at' => now()->addMinutes(10),
+            'user_id' => $user->id, // Associe le code à l'utilisateur
+            'code' => Hash::make($code), // Hache le code avant de l'enregistrer
+            'expires_at' => now()->addMinutes(10), // Définit une durée de validité de 10 minutes
         ]);
 
-        // Envoie le code par email.
+        // Envoie le code par email à l'utilisateur
         $user->notify(new PasswordResetCodeNotification($code));
     }
 
+
     /**
-     * Vérifie si le code fourni est valide.
+     * Vérifie si le code fourni par l'utilisateur est valide.
      */
     public function verifyCode(User $user, string $code): bool
     {
-        // Recherche le dernier code de l'utilisateur.
-        $verificationCode = PasswordResetCode::where('user_id', $user->id)
+        // Recherche le dernier code de réinitialisation de l'utilisateur
+        $resetCode = PasswordResetCode::where('user_id', $user->id)
             ->latest()
             ->first();
 
-        // Vérifie que le code existe.
-        if (!$verificationCode) {
+        // Vérifie si aucun code n'existe
+        if (!$resetCode) {
+            return false; // Indique que le code n'est pas valide
+        }
+
+        // Vérifie si le code a dépassé sa date d'expiration
+        if ($resetCode->expires_at->isPast()) {
+            // Supprime le code expiré
+            $resetCode->delete();
+
+            // Indique que le code n'est plus valide
             return false;
         }
 
-        // Vérifie que le code n'est pas expiré.
-        if ($verificationCode->expires_at->isPast()) {
-            $verificationCode->delete();
-
-            return false;
+        // Vérifie si le code fourni correspond au code haché enregistré
+        if (!Hash::check($code, $resetCode->code)) {
+            return false; // Indique que le code est incorrect
         }
 
-        // Vérifie que le code fourni correspond au code enregistré.
-        if (!Hash::check($code, $verificationCode->code)) {
-            return false;
-        }
+        // Ne supprime PAS le code ici
+        // Il doit encore être disponible pour l'étape de réinitialisation
 
-        // Supprime le code après une vérification réussie.
-        $verificationCode->delete();
+        return true; // Indique que le code est valide
+    }
 
-        return true;
+
+    /**
+     * Supprime le code de réinitialisation après utilisation.
+     */
+    public function deleteCode(User $user): void
+    {
+        // Supprime tous les codes de réinitialisation de l'utilisateur
+        PasswordResetCode::where('user_id', $user->id)->delete();
     }
 }
