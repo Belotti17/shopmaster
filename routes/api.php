@@ -108,16 +108,13 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])
 Route::get('/users', [UserController::class, 'index'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut accéder à cette route
 
-
 // Récupère un utilisateur précis
 Route::get('/users/{user}', [UserController::class, 'show'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut accéder à cette route
 
-
 // Modifie les informations d'un utilisateur
 Route::put('/users/{user}', [UserController::class, 'update'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut modifier un utilisateur
-
 
 // Supprime un utilisateur
 Route::delete('/users/{user}', [UserController::class, 'destroy'])
@@ -140,12 +137,9 @@ Route::get('/orders', [OrderController::class, 'index'])
 Route::get('/orders/{order}', [OrderController::class, 'show'])
     ->middleware('auth:sanctum');
 
-
 // ======================================================
 // VÉRIFICATION DE L'ADRESSE EMAIL
 // ======================================================
 
-// Permet à Laravel de vérifier l'adresse email de l'utilisateur
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    ->middleware(['auth:sanctum', 'signed'])
-    ->name('verification.verify');
+// Vérifie l'adresse email avec le code à 6 chiffres
+Route::post('/email/verify', [VerificationController::class, 'verify']);
