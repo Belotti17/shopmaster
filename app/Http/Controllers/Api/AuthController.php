@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest; // Validation de la connexion
 use App\Http\Requests\RegisterRequest; // Validation de l'inscription
 use App\Models\User; // Modèle utilisateur
 use Illuminate\Support\Facades\Hash; // Gestion des mots de passe
+use Illuminate\Auth\Events\Registered; // Événement déclenché après l'inscription d'un utilisateur
 
 class AuthController extends Controller // Controller pour gérer l'authentification
 {
@@ -19,6 +20,8 @@ class AuthController extends Controller // Controller pour gérer l'authentifica
             'password' => Hash::make($request->password), // Hash le mot de passe
             'role' => 'client', // Donne automatiquement le rôle client
         ]);
+
+        event(new Registered($user)); // Informe Laravel qu'un nouvel utilisateur vient d'être enregistré
 
         return response()->json([ // Retourne une réponse JSON
             'message' => 'Utilisateur créé avec succès', // Message de confirmation
@@ -45,13 +48,12 @@ class AuthController extends Controller // Controller pour gérer l'authentifica
         ]);
     }
 
-
     public function logout(Request $request) // Déclare la méthode permettant de déconnecter l'utilisateur
     {
-    $request->user()->currentAccessToken()->delete(); // Supprime uniquement le token actuellement utilisé par l'utilisateur
+        $request->user()->currentAccessToken()->delete(); // Supprime uniquement le token actuellement utilisé par l'utilisateur
 
-    return response()->json([ // Retourne une réponse au format JSON
-        'message' => 'Déconnexion réussie',
-    ]);
+        return response()->json([ // Retourne une réponse au format JSON
+            'message' => 'Déconnexion réussie', // Message de confirmation
+        ]);
     }
 }
