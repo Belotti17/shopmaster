@@ -135,4 +135,10 @@ Route::get('/orders', [OrderController::class, 'index'])
 
 // Permet au client connecté de consulter une commande précise
 Route::get('/orders/{order}', [OrderController::class, 'show'])
-    ->middleware('auth:sanctum');   
+    ->middleware('auth:sanctum');
+    
+Route::get('/email/verify/{id}/{hash}', function () {
+    return response()->json([
+        'message' => 'Route de vérification atteinte',
+    ]);
+})->name('verification.verify');
