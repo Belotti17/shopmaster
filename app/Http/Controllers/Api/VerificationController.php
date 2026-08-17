@@ -1,30 +1,65 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api; // Namespace du contrôleur API
 
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Controller; // Contrôleur principal Laravel
+use App\Http\Requests\VerifyEmailRequest; // Validation du code de vérification
+use App\Models\User; // Modèle utilisateur
+use App\Models\EmailVerificationCode; // Modèle des codes de vérification
 
 class VerificationController extends Controller
 {
-    // Vérifie l'adresse email de l'utilisateur
-    public function verify(EmailVerificationRequest $request)
+    /**
+     * Vérifie le code envoyé par l'utilisateur.
+     */
+    public function verify(VerifyEmailRequest $request)
     {
-        // Vérifie si l'adresse email est déjà vérifiée
-        if ($request->user()->hasVerifiedEmail()) {
+        // Recherche l'utilisateur grâce à son adresse email
+        $user = User::where('email', $request->email)->first();
 
-            // Retourne une réponse JSON pour informer l'utilisateur
+        // Vérifie si l'utilisateur a déjà confirmé son adresse email
+        if ($user->email_verified_at !== null) {
             return response()->json([
-                'message' => 'Votre adresse email est déjà vérifiée.',
-            ]);
+                'message' => 'Cette adresse email est déjà vérifiée.',
+            ], 400);
         }
 
-        // Marque l'adresse email de l'utilisateur comme vérifiée
-        $request->user()->markEmailAsVerified();
+        // Recherche le code de vérification correspondant à l'utilisateur
+        $verificationCode = EmailVerificationCode::where('user_id', $user->id)
+            ->where('code', $request->code)
+            ->latest()
+            ->first();
 
-        // Retourne une réponse JSON après la vérification
+        // Vérifie si le code existe
+        if (!$verificationCode) {
+            return response()->json([
+                'message' => 'Le code de vérification est incorrect.',
+            ], 422);
+        }
+
+        // Vérifie si le code est expiré
+        if ($verificationCode->expires_at->isPast()) {
+            // Supprime le code expiré
+            $verificationCode->delete();
+
+            return response()->json([
+                'message' => 'Le code de vérification a expiré.',
+            ], 422);
+        }
+
+        // Marque l'adresse email comme vérifiée
+        $user->email_verified_at = now();
+
+        // Enregistre la modification dans la base de données
+        $user->save();
+
+        // Supprime le code qui vient d'être utilisé
+        $verificationCode->delete();
+
+        // Retourne une réponse de confirmation
         return response()->json([
-            'message' => 'Votre adresse email a été vérifiée avec succès.',
+            'message' => 'Adresse email vérifiée avec succès.',
+            'user' => $user->fresh(),
         ]);
     }
 }
