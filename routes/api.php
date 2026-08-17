@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CategoryController; // Importe le contrôleur des c
 use App\Http\Controllers\Api\UserController; // Importe le contrôleur des utilisateurs
 use App\Http\Controllers\Api\OrderController; // Importe le contrôleur des commandes
 use App\Http\Controllers\Api\VerificationController; // Importe le contrôleur de vérification d'email
+use App\Http\Controllers\Api\PasswordResetController; // Importe le contrôleur de réinitialisation du mot de passe
 
 
 // ======================================================
@@ -34,15 +35,12 @@ Route::get('/user', function () {
     return request()->user(); // Retourne les informations de l'utilisateur authentifié
 })->middleware('auth:sanctum'); // Protège la route avec Sanctum
 
-
 // Route permettant à l'utilisateur connecté de consulter son profil
 Route::middleware('auth:sanctum')->get('/profile', [UserController::class, 'profile']);
-
 
 // Route permettant à l'utilisateur connecté de modifier son profil
 Route::put('/profile', [ClientController::class, 'updateProfile'])
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié
-
 
 // Route permettant à l'utilisateur connecté de modifier son propre mot de passe
 Route::put('/profile/password', [ClientController::class, 'updatePassword'])
@@ -76,16 +74,11 @@ Route::delete('/products/{product}', [ProductController::class, 'destroy'])
 // CATÉGORIES
 // ======================================================
 
-// Routes publiques permettant de consulter les catégories
-
 // Récupère toutes les catégories
 Route::get('/categories', [CategoryController::class, 'index']);
 
 // Récupère une catégorie précise
 Route::get('/categories/{category}', [CategoryController::class, 'show']);
-
-
-// Routes protégées réservées à l'administrateur
 
 // Crée une nouvelle catégorie
 Route::post('/categories', [CategoryController::class, 'store'])
@@ -127,15 +120,16 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])
 
 // Permet au client connecté de créer une commande
 Route::post('/orders', [OrderController::class, 'store'])
-    ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum'); // Vérifie que le client est authentifié
 
 // Permet au client connecté de consulter ses commandes
 Route::get('/orders', [OrderController::class, 'index'])
-    ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum'); // Vérifie que le client est authentifié
 
 // Permet au client connecté de consulter une commande précise
 Route::get('/orders/{order}', [OrderController::class, 'show'])
-    ->middleware('auth:sanctum');
+    ->middleware('auth:sanctum'); // Vérifie que le client est authentifié
+
 
 // ======================================================
 // VÉRIFICATION DE L'ADRESSE EMAIL
@@ -143,3 +137,17 @@ Route::get('/orders/{order}', [OrderController::class, 'show'])
 
 // Vérifie l'adresse email avec le code à 6 chiffres
 Route::post('/email/verify', [VerificationController::class, 'verify']);
+
+
+// ======================================================
+// RÉINITIALISATION DU MOT DE PASSE
+// ======================================================
+
+// Permet à l'utilisateur de demander un code de réinitialisation
+Route::post('/password/forgot', [PasswordResetController::class, 'forgot']);
+
+// Permet à l'utilisateur de vérifier le code reçu par email
+Route::post('/password/verify', [PasswordResetController::class, 'verify']);
+
+// Permet à l'utilisateur de définir un nouveau mot de passe
+Route::post('/password/reset', [PasswordResetController::class, 'reset']);
