@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route; // Importe le système de gestion des rout
 use App\Http\Controllers\Api\CategoryController; // Importe le contrôleur des catégories
 use App\Http\Controllers\Api\UserController; // Importe le contrôleur des utilisateurs
 use App\Http\Controllers\Api\OrderController; // Importe le contrôleur des commandes
+use App\Http\Controllers\Api\VerificationController; // Importe le contrôleur de vérification d'email
+
 
 // ======================================================
 // AUTHENTIFICATION
@@ -121,9 +123,10 @@ Route::put('/users/{user}', [UserController::class, 'update'])
 Route::delete('/users/{user}', [UserController::class, 'destroy'])
     ->middleware(['auth:sanctum', 'admin']); // Seul un administrateur authentifié peut supprimer un utilisateur
 
- // ====================
+
+// ======================================================
 // ROUTES DES COMMANDES
-// ====================
+// ======================================================
 
 // Permet au client connecté de créer une commande
 Route::post('/orders', [OrderController::class, 'store'])
@@ -136,9 +139,13 @@ Route::get('/orders', [OrderController::class, 'index'])
 // Permet au client connecté de consulter une commande précise
 Route::get('/orders/{order}', [OrderController::class, 'show'])
     ->middleware('auth:sanctum');
-    
-Route::get('/email/verify/{id}/{hash}', function () {
-    return response()->json([
-        'message' => 'Route de vérification atteinte',
-    ]);
-})->name('verification.verify');
+
+
+// ======================================================
+// VÉRIFICATION DE L'ADRESSE EMAIL
+// ======================================================
+
+// Permet à Laravel de vérifier l'adresse email de l'utilisateur
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->middleware(['auth:sanctum', 'signed'])
+    ->name('verification.verify');
