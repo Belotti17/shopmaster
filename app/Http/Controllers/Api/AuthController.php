@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Api; // Emplacement du Controller API
 
 use App\Http\Controllers\Controller; // Controller principal Laravel
-use Illuminate\Http\Request; // Importe Request pour récupérer l'utilisateur et son token actuel
+use Illuminate\Http\Request; // Importe Request pour récupérer les données de la requête
 use App\Http\Requests\LoginRequest; // Validation de la connexion
 use App\Http\Requests\RegisterRequest; // Validation de l'inscription
 use App\Models\User; // Modèle utilisateur
 use Illuminate\Support\Facades\Hash; // Gestion des mots de passe
-use Illuminate\Auth\Events\Registered; // Événement déclenché après l'inscription d'un utilisateur
+use App\Services\EmailVerificationService; // Service de vérification de l'adresse email
 
 class AuthController extends Controller // Controller pour gérer l'authentification
 {
-    public function register(RegisterRequest $request) // Fonction d'inscription
+    public function register(
+        RegisterRequest $request,
+        EmailVerificationService $emailVerificationService
+    ) // Fonction d'inscription
     {
         $user = User::create([ // Création de l'utilisateur
             'name' => $request->name, // Récupère le nom envoyé
@@ -21,10 +24,11 @@ class AuthController extends Controller // Controller pour gérer l'authentifica
             'role' => 'client', // Donne automatiquement le rôle client
         ]);
 
-        event(new Registered($user)); // Informe Laravel qu'un nouvel utilisateur vient d'être enregistré
+        // Génère et envoie le code de vérification par email
+        $emailVerificationService->sendCode($user);
 
         return response()->json([ // Retourne une réponse JSON
-            'message' => 'Utilisateur créé avec succès', // Message de confirmation
+            'message' => 'Utilisateur créé avec succès. Un code de vérification a été envoyé à votre adresse email.', // Message de confirmation
             'user' => $user, // Retourne l'utilisateur créé
         ], 201); // Code HTTP 201 = création réussie
     }
