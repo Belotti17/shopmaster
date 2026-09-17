@@ -9,6 +9,7 @@ use App\Http\Requests\RegisterRequest; // Validation de l'inscription
 use App\Models\User; // Modèle utilisateur
 use App\Services\EmailVerificationService; // Service de vérification email
 use Illuminate\Support\Facades\Hash; // Gestion des mots de passe
+use App\Services\LoginOtpService;
 
 
 class AuthController extends Controller
@@ -42,7 +43,7 @@ class AuthController extends Controller
     /**
      * Connexion d'un utilisateur.
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, LoginOtpService $loginOtpService)
     {
         // Recherche l'utilisateur avec son email
         $user = User::where('email', $request->email)->first();
@@ -61,10 +62,30 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Crée le token Sanctum
+        $loginOtpService->sendCode($user);
+
+        return response()->json([
+            'message' => 'Un code OTP a été envoyé à votre adresse email.',
+        ]);
+    }
+
+    public function verifyLoginOtp(Request $request, LoginOtpService $loginOtpService)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'code' => ['required', 'digits:6'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !$loginOtpService->verifyCode($user, $request->code)) {
+            return response()->json([
+                'message' => 'Le code OTP est incorrect ou expiré.',
+            ], 422);
+        }
+
         $token = $user->createToken('shopmaster-token')->plainTextToken;
 
-        // Retourne la réponse de connexion
         return response()->json([
             'message' => 'Connexion réussie',
             'token' => $token,
