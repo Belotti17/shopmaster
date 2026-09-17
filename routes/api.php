@@ -141,6 +141,9 @@ Route::get('/orders/{order}', [OrderController::class, 'show'])
 // Vérifie l'adresse email avec le code à 6 chiffres
 Route::post('/email/verify', [VerificationController::class, 'verify']);
 
+// Vérifie l'OTP reçu après l'inscription
+Route::post('/register/verify-otp', [VerificationController::class, 'verify']);
+
 
 // ======================================================
 // RÉINITIALISATION DU MOT DE PASSE
