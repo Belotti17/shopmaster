@@ -21,6 +21,9 @@ Route::post('/register', [AuthController::class, 'register']);
 // Crée la route POST pour connecter un utilisateur
 Route::post('/login', [AuthController::class, 'login']);
 
+// Vérifie le code OTP et termine la connexion
+Route::post('/login/verify-otp', [AuthController::class, 'verifyLoginOtp']);
+
 // Crée la route POST permettant à l'utilisateur de se déconnecter
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth:sanctum'); // Vérifie que l'utilisateur est authentifié avant de le déconnecter
