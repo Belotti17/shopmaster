@@ -14,6 +14,7 @@ use Laravel\Sanctum\HasApiTokens; // Permet à User d'utiliser les tokens Sanctu
 use App\Models\Order; // Importe le modèle Order
 use App\Models\EmailVerificationCode; // Importe le modèle des codes de vérification
 use App\Models\PasswordResetCode; // Importe le modèle des codes de réinitialisation
+use App\Models\LoginOtpCode;
 
 
 #[Fillable(['name', 'email', 'password', 'role'])] // Champs autorisés lors du remplissage du modèle
@@ -48,6 +49,11 @@ class User extends Authenticatable implements MustVerifyEmail // Modèle User av
     public function passwordResetCodes(): HasMany // Un utilisateur peut avoir plusieurs codes de réinitialisation
     {
         return $this->hasMany(PasswordResetCode::class); // Retourne les codes de réinitialisation de l'utilisateur
+    }
+
+    public function loginOtpCodes(): HasMany
+    {
+        return $this->hasMany(LoginOtpCode::class);
     }
 
 
