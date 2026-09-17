@@ -93,6 +93,27 @@ class AuthController extends Controller
         ]);
     }
 
+    public function resendLoginOtp(Request $request, LoginOtpService $loginOtpService)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || $user->email_verified_at === null) {
+            return response()->json([
+                'message' => 'Impossible de renvoyer le code OTP.',
+            ], 422);
+        }
+
+        $loginOtpService->sendCode($user);
+
+        return response()->json([
+            'message' => 'Un nouveau code OTP a été envoyé à votre adresse email.',
+        ]);
+    }
+
 
     /**
      * Déconnexion de l'utilisateur.
