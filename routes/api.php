@@ -9,7 +9,9 @@ use App\Http\Controllers\Api\UserController; // Importe le contrôleur des utili
 use App\Http\Controllers\Api\OrderController; // Importe le contrôleur des commandes
 use App\Http\Controllers\Api\VerificationController; // Importe le contrôleur de vérification d'email
 use App\Http\Controllers\Api\PasswordResetController; // Importe le contrôleur de réinitialisation du mot de passe
+use App\Http\Controllers\Api\DocsController; // Importe le contrôleur de documentation API
 
+Route::get('/docs', [DocsController::class, 'index']);
 
 // ======================================================
 // AUTHENTIFICATION
