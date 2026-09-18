@@ -11,78 +11,95 @@ use Illuminate\Support\Facades\Log; // Permet d'écrire des logs
 
 class ProductController extends Controller // Déclare le contrôleur des produits
 {
-    public function index(Request $request) // Déclare la méthode permettant de récupérer tous les produits
-    {
-        $search = trim((string) $request->input('search', ''));
-        $categoryId = $request->integer('category_id');
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
-        $inStockOnly = $request->boolean('in_stock');
-        $sort = $request->input('sort', 'newest');
-        $perPage = min(max((int) $request->input('per_page', 12), 1), 100);
+public function index(Request $request)
+{
+    $search = trim((string) $request->input('search', ''));
+    $categoryId = $request->integer('category_id');
+    $minPrice = $request->input('min_price');
+    $maxPrice = $request->input('max_price');
+    $inStockOnly = $request->boolean('in_stock');
 
-        $cacheKey = 'products_index_' . md5(json_encode([
-            $search,
-            $categoryId,
-            $minPrice,
-            $maxPrice,
-            $inStockOnly,
-            $sort,
-            $perPage,
-        ]));
+    $sort = $request->input('sort', 'newest');
+    $direction = $request->input('direction', 'desc');
 
-        $products = Cache::remember($cacheKey, 300, function () use ($search, $categoryId, $minPrice, $maxPrice, $inStockOnly, $sort, $perPage) {
-            $query = Product::query()->with('category');
+    $perPage = min(max((int) $request->input('per_page', 12), 1), 100);
 
-            if ($search !== '') {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                });
-            }
+    $cacheKey = 'products_index_' . md5(json_encode([
+        $search,
+        $categoryId,
+        $minPrice,
+        $maxPrice,
+        $inStockOnly,
+        $sort,
+        $direction,
+        $perPage,
+        $request->input('page', 1),
+    ]));
 
-            if ($categoryId) {
-                $query->where('category_id', $categoryId);
-            }
+    $data = Cache::remember($cacheKey, 300, function () use (
+        $search,
+        $categoryId,
+        $minPrice,
+        $maxPrice,
+        $inStockOnly,
+        $sort,
+        $direction,
+        $perPage
+    ) {
+        $query = Product::query()->with('category');
 
-            if ($minPrice !== null && $minPrice !== '') {
-                $query->where('price', '>=', (float) $minPrice);
-            }
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
-            if ($maxPrice !== null && $maxPrice !== '') {
-                $query->where('price', '<=', (float) $maxPrice);
-            }
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
 
-            if ($inStockOnly) {
-                $query->where('stock', '>', 0);
-            }
+        if ($minPrice !== null && $minPrice !== '') {
+            $query->where('price', '>=', (float) $minPrice);
+        }
 
-            match ($sort) {
-                'price_asc' => $query->orderBy('price', 'asc'),
-                'price_desc' => $query->orderBy('price', 'desc'),
-                'name_asc' => $query->orderBy('name', 'asc'),
-                'name_desc' => $query->orderBy('name', 'desc'),
-                'oldest' => $query->orderBy('created_at', 'asc'),
-                default => $query->orderBy('created_at', 'desc'),
-            };
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $query->where('price', '<=', (float) $maxPrice);
+        }
 
-            $result = $query->paginate($perPage);
+        if ($inStockOnly) {
+            $query->where('stock', '>', 0);
+        }
 
-            return $result;
-        });
+        if ($sort === 'price') {
+            $query->orderBy('price', $direction === 'asc' ? 'asc' : 'desc');
+        } elseif ($sort === 'name') {
+            $query->orderBy('name', $direction === 'asc' ? 'asc' : 'desc');
+        } elseif ($sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
 
-        return response()->json([
-            'message' => 'Liste des produits récupérée avec succès',
-            'products' => $products->items(),
+        $result = $query->paginate($perPage);
+
+        return [
+            'products' => $result->items(),
             'pagination' => [
-                'current_page' => $products->currentPage(),
-                'per_page' => $products->perPage(),
-                'total' => $products->total(),
-                'last_page' => $products->lastPage(),
+                'current_page' => $result->currentPage(),
+                'per_page' => $result->perPage(),
+                'total' => $result->total(),
+                'last_page' => $result->lastPage(),
             ],
-        ]);
-    } // Termine la méthode index
+        ];
+    });
 
+    return response()->json([
+        'message' => 'Liste des produits récupérée avec succès',
+        'products' => $data['products'],
+        'pagination' => $data['pagination'],
+    ]);
+}
 
     public function store(ProductRequest $request) // Reçoit une requête validée pour créer un produit
     {
