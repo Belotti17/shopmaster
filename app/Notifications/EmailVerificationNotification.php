@@ -43,9 +43,12 @@ class EmailVerificationNotification extends Notification
             ->greeting('Bonjour ' . $notifiable->name . ',')
             ->line('Merci de vous être inscrit sur ShopMaster.')
             ->line('Voici votre code de vérification :')
-            ->line($this->code)
+            ->line('')
+            ->line('Code : ' . $this->code)
+            ->line('')
             ->line('Ce code est valable pendant 10 minutes.')
-            ->line('Si vous n’êtes pas à l’origine de cette inscription, vous pouvez ignorer cet email.');
+            ->line('Si vous n’êtes pas à l’origine de cette inscription, vous pouvez ignorer cet email.')
+            ->salutation('L’équipe ShopMaster');
     }
 
     /**
