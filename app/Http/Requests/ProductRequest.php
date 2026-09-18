@@ -14,12 +14,22 @@ class ProductRequest extends FormRequest // Déclare la classe de validation des
     public function rules(): array // Définit les règles de validation des données du produit
     {
         return [
-            'name' => 'required|string|max:255', // Le nom est obligatoire, doit être du texte et ne doit pas dépasser 255 caractères
-            'description' => 'nullable|string', // La description est facultative mais doit être du texte si elle est fournie
-            'price' => 'required|numeric|min:0', // Le prix est obligatoire, doit être numérique et ne peut pas être négatif
-            'stock' => 'required|integer|min:0', // Le stock est obligatoire, doit être un entier et ne peut pas être négatif
-            'image' => 'nullable|string|max:255', // L'image est facultative et son chemin ne doit pas dépasser 255 caractères
-            'category_id' => 'required|exists:categories,id', // La catégorie est obligatoire et doit exister dans la table categories
-        ]; // Retourne toutes les règles de validation
+            'name' => ['required', 'string', 'min:2', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'price' => ['required', 'numeric', 'min:0', 'max:999999.99'],
+            'stock' => ['required', 'integer', 'min:0', 'max:100000'],
+            'image' => ['nullable', 'string', 'max:255'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.min' => 'Le nom du produit doit contenir au moins 2 caractères.',
+            'price.max' => 'Le prix ne peut pas dépasser 999999.99.',
+            'stock.max' => 'Le stock ne peut pas dépasser 100000 unités.',
+            'category_id.exists' => 'La catégorie sélectionnée est introuvable.',
+        ];
     }
 }
