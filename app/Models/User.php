@@ -24,6 +24,20 @@ class User extends Authenticatable implements MustVerifyEmail // Modèle User av
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable; // Active Sanctum, les factories et les notifications
 
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isClient(): bool
+    {
+        return $this->hasRole('client');
+    }
 
     /**
      * Définit la relation entre User et Order.
