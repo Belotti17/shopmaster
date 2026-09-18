@@ -10,7 +10,9 @@ class AdminMiddleware // Middleware chargé de vérifier le rôle admin
 {
     public function handle(Request $request, Closure $next): Response // Intercepte la requête
     {
-        if (!$request->user() || $request->user()->role !== 'admin') { // Vérifie que l'utilisateur est connecté et admin
+        $user = $request->user();
+
+        if (!$user || !$user->isAdmin()) { // Vérifie que l'utilisateur est connecté et admin
             return response()->json([ // Retourne une réponse JSON
                 'message' => 'Accès refusé. Administrateur uniquement.', // Message d'erreur
             ], 403); // 403 = accès interdit
