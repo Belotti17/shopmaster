@@ -14,6 +14,7 @@ return [
     |
     */
 
+    // Le transport utilisé par défaut pour envoyer les e-mails si aucun mailer n'est précisé.
     'default' => env('MAIL_MAILER', 'log'),
 
     /*
@@ -35,8 +36,10 @@ return [
     |
     */
 
+    // Liste des transports d'envoi disponibles : SMTP, SES, Postmark, Resend, log, etc.
     'mailers' => [
 
+        // Configuration du serveur SMTP utilisé pour envoyer les e-mails via un fournisseur SMTP.
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -49,10 +52,12 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        // Configuration pour Amazon SES.
         'ses' => [
             'transport' => 'ses',
         ],
 
+        // Configuration pour Postmark.
         'postmark' => [
             'transport' => 'postmark',
             // 'message_stream_id' => env('POSTMARK_MESSAGE_STREAM_ID'),
@@ -61,24 +66,29 @@ return [
             // ],
         ],
 
+        // Configuration pour Resend.
         'resend' => [
             'transport' => 'resend',
         ],
 
+        // Configuration pour l'envoi via sendmail sur le serveur.
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
         ],
 
+        // Configuration du transport de journalisation : les e-mails sont enregistrés dans les logs.
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
         ],
 
+        // Transport pour tester sans envoyer réellement : les messages sont conservés en mémoire.
         'array' => [
             'transport' => 'array',
         ],
 
+        // Fallback : tente le SMTP puis le transport log si l'envoi échoue.
         'failover' => [
             'transport' => 'failover',
             'mailers' => [
@@ -88,6 +98,7 @@ return [
             'retry_after' => 60,
         ],
 
+        // Round robin : répartit les e-mails entre plusieurs transports selon une rotation.
         'roundrobin' => [
             'transport' => 'roundrobin',
             'mailers' => [
@@ -110,6 +121,7 @@ return [
     |
     */
 
+    // Adresse expéditeur globale utilisée pour tous les e-mails envoyés par l'application.
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
