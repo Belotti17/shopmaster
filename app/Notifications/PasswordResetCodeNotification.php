@@ -44,8 +44,10 @@ class PasswordResetCodeNotification extends Notification // Déclare la notifica
             ->subject('Réinitialisation de votre mot de passe - ShopMaster') // Définit le sujet de l'email
             ->greeting('Bonjour ' . $notifiable->name . ',') // Affiche le nom de l'utilisateur dans le message
             ->line('Vous avez demandé la réinitialisation de votre mot de passe.') // Explique pourquoi l'email est envoyé
+            ->line('')
             ->line('Votre code de réinitialisation est :') // Présente le code à l'utilisateur
-            ->line($this->code) // Affiche le code de réinitialisation à 6 chiffres
+            ->line('Code : ' . $this->code) // Affiche le code de réinitialisation à 6 chiffres
+            ->line('')
             ->line('Ce code est valable pendant 10 minutes.') // Indique la durée de validité du code
             ->line('Si vous n\'êtes pas à l\'origine de cette demande, vous pouvez ignorer cet email.') // Informe l'utilisateur en cas de demande non effectuée
             ->salutation('L\'équipe ShopMaster'); // Ajoute la signature de ShopMaster
