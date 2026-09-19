@@ -126,6 +126,10 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])
 // ROUTES DES COMMANDES
 // ======================================================
 
+// Permet à l'administrateur de consulter toutes les commandes
+Route::get('/admin/orders', [OrderController::class, 'adminIndex'])
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
+
 // Permet au client connecté de créer une commande
 Route::post('/orders', [OrderController::class, 'store'])
     ->middleware('auth:sanctum'); // Vérifie que le client est authentifié
