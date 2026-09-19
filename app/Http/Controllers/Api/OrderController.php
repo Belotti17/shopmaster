@@ -130,6 +130,19 @@ class OrderController extends Controller // Déclare le contrôleur des commande
         ]);
     }
 
+    // Récupère le détail d'une commande pour l'administrateur
+    public function adminShow(Order $order)
+    {
+        // Charge le client, les articles et les produits de la commande
+        $order->load('user', 'items.product');
+
+        // Retourne le détail de la commande
+        return response()->json([
+            'message' => 'Détail de la commande administrateur récupéré avec succès', // Message de confirmation
+            'order' => $order, // Retourne la commande complète
+        ]);
+    }
+
     // Récupère une commande précise
     public function show(Request $request, Order $order)
     {
