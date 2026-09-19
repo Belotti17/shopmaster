@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller; // Importe le contrôleur principal de Lara
 use Illuminate\Http\Request; // Permet de récupérer les données envoyées dans la requête
 use App\Models\Order; // Importe le modèle Order
 use App\Models\Product; // Importe le modèle Product
+use App\Notifications\OrderCreatedNotification; // Importe la notification de création de commande
 use Illuminate\Support\Facades\DB; // Permet d'utiliser les transactions de base de données
 use Illuminate\Http\Exceptions\HttpResponseException; // Permet de retourner une erreur HTTP personnalisée
 
@@ -87,6 +88,9 @@ class OrderController extends Controller // Déclare le contrôleur des commande
 
         // Charge les informations du client et des produits commandés
         $order->load('user', 'items.product');
+
+        // Envoie l'email de confirmation au client
+        $order->user->notify(new OrderCreatedNotification($order));
 
         // Retourne la commande créée au format JSON
         return response()->json([
