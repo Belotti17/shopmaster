@@ -130,6 +130,10 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])
 Route::get('/admin/orders', [OrderController::class, 'adminIndex'])
     ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
 
+// Permet à l'administrateur de consulter le détail d'une commande
+Route::get('/admin/orders/{order}', [OrderController::class, 'adminShow'])
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
+
 // Permet au client connecté de créer une commande
 Route::post('/orders', [OrderController::class, 'store'])
     ->middleware('auth:sanctum'); // Vérifie que le client est authentifié
