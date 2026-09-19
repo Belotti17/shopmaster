@@ -134,6 +134,10 @@ Route::get('/admin/orders', [OrderController::class, 'adminIndex'])
 Route::get('/admin/orders/{order}', [OrderController::class, 'adminShow'])
     ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
 
+// Permet à l'administrateur de modifier le statut d'une commande
+Route::put('/admin/orders/{order}/status', [OrderController::class, 'adminUpdateStatus'])
+    ->middleware(['auth:sanctum', 'admin']); // Vérifie que l'utilisateur est connecté et administrateur
+
 // Permet au client connecté de créer une commande
 Route::post('/orders', [OrderController::class, 'store'])
     ->middleware('auth:sanctum'); // Vérifie que le client est authentifié

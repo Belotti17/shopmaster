@@ -143,6 +143,25 @@ class OrderController extends Controller // Déclare le contrôleur des commande
         ]);
     }
 
+    // Modifie le statut d'une commande pour l'administrateur
+    public function adminUpdateStatus(Request $request, Order $order)
+    {
+        // Valide le nouveau statut de la commande
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,confirmed,shipped,delivered,cancelled'],
+        ]);
+
+        // Met à jour uniquement le statut de la commande
+        $order->status = $validated['status'];
+        $order->save();
+
+        // Retourne la commande mise à jour
+        return response()->json([
+            'message' => 'Statut de la commande mis à jour avec succès', // Message de confirmation
+            'order' => $order, // Retourne la commande modifiée
+        ]);
+    }
+
     // Récupère une commande précise
     public function show(Request $request, Order $order)
     {
