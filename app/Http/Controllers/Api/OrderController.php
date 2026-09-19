@@ -115,6 +115,21 @@ class OrderController extends Controller // Déclare le contrôleur des commande
         ]);
     }
 
+    // Récupère toutes les commandes pour l'administrateur
+    public function adminIndex(Request $request)
+    {
+        // Charge les commandes avec leurs clients, articles et produits
+        $orders = Order::with('user', 'items.product')
+            ->latest() // Place les commandes les plus récentes en premier
+            ->get(); // Exécute la requête
+
+        // Retourne la liste des commandes administrateur
+        return response()->json([
+            'message' => 'Liste des commandes administrateur récupérée avec succès', // Message de confirmation
+            'orders' => $orders, // Retourne toutes les commandes
+        ]);
+    }
+
     // Récupère une commande précise
     public function show(Request $request, Order $order)
     {
